@@ -13,3 +13,4 @@ lxml
 gdown
 memory-profiler
 psutil
+transformers==4.48.0

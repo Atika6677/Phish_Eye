@@ -75,7 +75,7 @@ OS=$(uname -s)
 install_dependencies() {
   if [[ "$OS" == "Darwin" ]]; then
     echo "Detected macOS. Installing PyTorch and torchvision for macOS..."
-    conda run -n "$ENV_NAME" pip install torch==1.9.0 torchvision==0.10.0 torchaudio==0.9.0
+    conda run -n "$ENV_NAME" pip install torch==1.10.0 torchvision==0.11.0 torchaudio==0.10.0
     conda run -n "$ENV_NAME" pip install 'git+https://github.com/facebookresearch/detectron2.git'
   else
     # Check for NVIDIA GPU by looking for 'nvcc' or 'nvidia-smi'
@@ -85,7 +85,7 @@ install_dependencies() {
       conda run -n "$ENV_NAME" pip install detectron2 -f "https://dl.fbaipublicfiles.com/detectron2/wheels/cu111/torch1.9/index.html"
     else
       echo "No CUDA detected. Installing CPU-only PyTorch and torchvision..."
-      conda run -n "$ENV_NAME" pip install torch==1.9.0+cpu torchvision==0.10.0+cpu torchaudio==0.9.0 -f "https://download.pytorch.org/whl/torch_stable.html"
+      conda run -n "$ENV_NAME" pip install torch==1.10.0+cpu torchvision==0.11.0+cpu torchaudio==0.10.0 -f https://download.pytorch.org/whl/torch_stable.html"
       conda run -n "$ENV_NAME" pip install detectron2 -f "https://dl.fbaipublicfiles.com/detectron2/wheels/cpu/torch1.9/index.html"
     fi
   fi
@@ -108,16 +108,15 @@ mkdir -p "$MODELS_DIR"
 cd "$MODELS_DIR"
 
 # 14. Download model files with retry mechanism
-declare -A MODEL_FILES=(
-  ["rcnn_bet365.pth"]="1tE2Mu5WC8uqCxei3XqAd7AWaP5JTmVWH"
-  ["faster_rcnn.yaml"]="1Q6lqjpl4exW7q_dPbComcj0udBMDl8CW"
-  ["resnetv2_rgb_new.pth.tar"]="1H0Q_DbdKPLFcZee8I14K62qV7TTy7xvS"
-  ["expand_targetlist.zip"]="1fr5ZxBKyDiNZ_1B6rRAfZbAHBBoUjZ7I"
-  ["domain_map.pkl"]="1qSdkSSoCYUkZMKs44Rup_1DPBxHnEKl1"
-)
+MODEL_FILES=("rcnn_bet365.pth:1tE2Mu5WC8uqCxei3XqAd7AWaP5JTmVWH"
+  "faster_rcnn.yaml:1Q6lqjpl4exW7q_dPbComcj0udBMDl8CW"
+  "resnetv2_rgb_new.pth.tar:1H0Q_DbdKPLFcZee8I14K62qV7TTy7xvS"
+  "expand_targetlist.zip:1fr5ZxBKyDiNZ_1B6rRAfZbAHBBoUjZ7I"
+  "domain_map.pkl:1qSdkSSoCYUkZMKs44Rup_1DPBxHnEKl1")
 
-for FILE_NAME in "${!MODEL_FILES[@]}"; do
-  FILE_ID="${MODEL_FILES[$FILE_NAME]}"
+for ENTRY in "${MODEL_FILES[@]}"; do
+  FILE_NAME="${ENTRY%%:*}"
+  FILE_ID="${ENTRY#*:}"
   if [ -f "$FILE_NAME" ]; then
     echo "$FILE_NAME already exists. Skipping download."
   else
