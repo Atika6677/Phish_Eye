@@ -11,7 +11,7 @@ error_exit() {
 }
 
 # 1. Set ENV_NAME with default value "phishpedia" if not already set
-ENV_NAME="${ENV_NAME:-phishpedia}"
+ENV_NAME="${ENV_NAME:-phisheye}"
 
 # 2. Check if ENV_NAME is set (it always will be now, but kept for flexibility)
 if [ -z "$ENV_NAME" ]; then
